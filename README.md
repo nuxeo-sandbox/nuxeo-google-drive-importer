@@ -17,7 +17,7 @@ First you'll need an oauth2 authentication token. The easiest way to get one is 
 - Next you need the ID of a file to import. The ID can be found in the google drive file's URL. 
 
 ```
-mvn test -Dgoogle-drive-accesstoken=MY_TOKEN -Dgoogle-drive-file-id=MY_FILE_ID
+mvn test -Dgoogle-drive-accesstoken=MY_TOKEN -Dgoogle-drive-file-id=MY_FILE_ID -Dgoogle-drive-folder-id=MY_FOLDER_ID
 ```
 
 ## How to run

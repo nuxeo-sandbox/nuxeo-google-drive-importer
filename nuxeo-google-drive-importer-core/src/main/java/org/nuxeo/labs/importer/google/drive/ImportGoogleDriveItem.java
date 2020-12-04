@@ -4,6 +4,8 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.ChildList;
+import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -27,10 +29,10 @@ import java.io.Serializable;
  *
  */
 @Operation(
-        id=ImportGoogleDriveItem.ID,
-        category=Constants.CAT_DOCUMENT,
-        label="Google Drive Item Importer",
-        description="Import a Google Drive Item by ID in Nuxeo")
+        id = ImportGoogleDriveItem.ID,
+        category = Constants.CAT_DOCUMENT,
+        label = "Google Drive Item Importer",
+        description = "Import a Google Drive Item by ID in Nuxeo")
 public class ImportGoogleDriveItem {
 
     public static final String ID = "Document.ImportGoogleDriveItem";
@@ -62,20 +64,36 @@ public class ImportGoogleDriveItem {
 
         HttpTransport httpTransport = credential.getTransport();
         JsonFactory jsonFactory = credential.getJsonFactory();
-        Drive drive =  new Drive.Builder(httpTransport, jsonFactory, credential)
+        Drive drive = new Drive.Builder(httpTransport, jsonFactory, credential)
                 .setApplicationName("Nuxeo")
                 .build();
 
         File file = drive.files().get(itemId).execute();
+        importFile(drive, file, input);
+        return input;
+    }
+
+    public void importFolder(Drive drive, File file, DocumentModel root) throws IOException {
+        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), file.getTitle(), "Folder");
+        folder = session.createDocument(folder);
+        ChildList children = drive.children().list(file.getId()).execute();
+        for(ChildReference reference: children.getItems()) {
+            File childFile = drive.files().get(reference.getId()).execute();
+            importFile(drive,childFile,folder);
+        }
+    }
+
+    public void importFile(Drive drive, File file, DocumentModel root) throws IOException {
+        if ("application/vnd.google-apps.folder".equals(file.getMimeType())) {
+            importFolder(drive, file, root);
+            return;
+        }
+
         InputStream in = drive.files().get(itemId).executeAsInputStream();
-
-        Blob blob = new FileBlob(in,file.getMimeType());
+        Blob blob = new FileBlob(in, file.getMimeType());
         blob.setFilename(file.getTitle());
-
-        DocumentModel doc = session.createDocumentModel(input.getPathAsString(),file.getTitle(),"File");
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), file.getTitle(), "File");
         doc.setPropertyValue("file:content", (Serializable) blob);
         session.createDocument(doc);
-
-        return input;
     }
 }
