@@ -98,7 +98,15 @@ public class ImportGoogleDriveItem {
             return;
         }
 
+        String mimetype = file.getMimeType();
+        if (mimetype.startsWith("application/vnd.google-apps.")) {
+            //todo upgrade to V3 API with more recent SDK (current one is from 2015)
+            return;
+        }
+
         InputStream in = drive.files().get(file.getId()).executeMediaAsInputStream();
+
+
         Blob blob = new FileBlob(in, file.getMimeType());
         blob.setFilename(file.getTitle());
 
