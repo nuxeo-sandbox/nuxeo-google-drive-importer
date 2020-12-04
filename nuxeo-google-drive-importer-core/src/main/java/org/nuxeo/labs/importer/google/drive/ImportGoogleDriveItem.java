@@ -16,13 +16,14 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.platform.filemanager.api.FileImporterContext;
+import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 
 /**
  *
@@ -38,6 +39,9 @@ public class ImportGoogleDriveItem {
 
     @Context
     protected CoreSession session;
+
+    @Context
+    protected FileManager fileManager;
 
     @Param(name = "itemId", required = true)
     protected String itemId;
@@ -79,8 +83,8 @@ public class ImportGoogleDriveItem {
     }
 
     public void importFolder(Drive drive, File file, DocumentModel root) throws IOException {
-        DocumentModel folder = session.createDocumentModel(root.getPathAsString(), file.getTitle(), "Folder");
-        folder = session.createDocument(folder);
+        DocumentModel folder = fileManager.createFolder(
+                session,file.getTitle(),root.getPathAsString(),true);
         incrementDocumentCounter();
         FileList children = drive.files().list().setQ(String.format("'%s' in parents",file.getId())).execute();
         for(File child: children.getItems()) {
@@ -97,9 +101,13 @@ public class ImportGoogleDriveItem {
         InputStream in = drive.files().get(file.getId()).executeMediaAsInputStream();
         Blob blob = new FileBlob(in, file.getMimeType());
         blob.setFilename(file.getTitle());
-        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), file.getTitle(), "File");
-        doc.setPropertyValue("file:content", (Serializable) blob);
-        session.createDocument(doc);
+
+        FileImporterContext context = FileImporterContext.builder(session,
+                blob, root.getPathAsString())
+                .overwrite(true)
+                .build();
+        fileManager.createOrUpdateDocument(context);
+
         incrementDocumentCounter();
     }
 

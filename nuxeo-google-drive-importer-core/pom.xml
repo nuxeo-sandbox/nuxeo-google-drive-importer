@@ -23,12 +23,27 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.nuxeo.ecm.platform</groupId>
+            <artifactId>nuxeo-platform-filemanager</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-drive</artifactId>
         </dependency>
         <dependency>
             <groupId>org.nuxeo.ecm.automation</groupId>
             <artifactId>nuxeo-automation-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nuxeo.ecm.platform</groupId>
+            <artifactId>nuxeo-platform-webapp-types</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.nuxeo.ecm.platform</groupId>
+            <artifactId>nuxeo-platform-default-config</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

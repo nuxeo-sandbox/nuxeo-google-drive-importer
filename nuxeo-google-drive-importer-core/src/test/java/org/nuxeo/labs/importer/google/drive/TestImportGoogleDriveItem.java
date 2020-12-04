@@ -31,7 +31,10 @@ import static org.junit.Assert.assertTrue;
 @Features(AutomationFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({"org.nuxeo.labs.nuxeo-google-drive-importer-core",
-         "org.nuxeo.ecm.platform.oauth"
+        "org.nuxeo.ecm.platform.oauth",
+        "org.nuxeo.ecm.platform.filemanager",
+        "org.nuxeo.ecm.platform.types",
+        "org.nuxeo.ecm.platform.webapp.types"
 })
 public class TestImportGoogleDriveItem {
 
@@ -47,42 +50,42 @@ public class TestImportGoogleDriveItem {
         NuxeoOAuth2Token token = new NuxeoOAuth2Token(
                 System.getProperty("google-drive-accesstoken"),
                 null,
-                System.currentTimeMillis()+300000);
+                System.currentTimeMillis() + 300000);
         token.setNuxeoLogin("Administrator");
         token.setServiceLogin("Administrator");
         token.setClientId("Administrator");
-        store.store("Administrator",token);
+        store.store("Administrator", token);
     }
 
     @Test
     public void testImportOneFile() throws OperationException {
-        DocumentModel folder = session.createDocumentModel(session.getRootDocument().getPathAsString(),"Folder","Folder");
+        DocumentModel folder = session.createDocumentModel(session.getRootDocument().getPathAsString(), "Folder", "Folder");
         folder = session.createDocument(folder);
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(folder);
         Map<String, Object> params = new HashMap<>();
         params.put("itemId", System.getProperty("google-drive-file-id"));
-        folder = (DocumentModel) automationService.run(ctx, ImportGoogleDriveItem.ID,params);
+        folder = (DocumentModel) automationService.run(ctx, ImportGoogleDriveItem.ID, params);
         DocumentModelList children = session.getChildren(folder.getRef());
-        assertEquals(1,children.size());
+        assertEquals(1, children.size());
         DocumentModel importedDoc = children.get(0);
         assertNotNull(importedDoc.getPropertyValue("file:content"));
     }
 
     @Test
     public void testImportFolder() throws OperationException {
-        DocumentModel folder = session.createDocumentModel(session.getRootDocument().getPathAsString(),"Folder","Folder");
+        DocumentModel folder = session.createDocumentModel(session.getRootDocument().getPathAsString(), "Folder", "Folder");
         folder = session.createDocument(folder);
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(folder);
         Map<String, Object> params = new HashMap<>();
         params.put("itemId", System.getProperty("google-drive-folder-id"));
-        params.put("batchSize",3);
-        folder = (DocumentModel) automationService.run(ctx, ImportGoogleDriveItem.ID,params);
+        params.put("batchSize", 3);
+        folder = (DocumentModel) automationService.run(ctx, ImportGoogleDriveItem.ID, params);
         DocumentModelList children = session.getChildren(folder.getRef());
-        assertEquals(1,children.size());
+        assertEquals(1, children.size());
         DocumentModel importedFolder = children.get(0);
         DocumentModelList importedFiles = session.getChildren(importedFolder.getRef());
-        assertTrue(importedFiles.size()>0);
+        assertTrue(importedFiles.size() > 0);
     }
 }
