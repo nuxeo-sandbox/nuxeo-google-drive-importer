@@ -48,10 +48,11 @@ public class ImportGoogleDriveItem {
 
     @OperationMethod
     public DocumentModel run(DocumentModel input) throws IOException {
-        OAuth2ServiceProvider oAuth2ServiceProvider =
-                Framework.getService(OAuth2ServiceProviderRegistry.class).getProvider(providerId);
+        GoogleOAuth2ServiceProvider oAuth2ServiceProvider =
+                (GoogleOAuth2ServiceProvider) Framework.getService(OAuth2ServiceProviderRegistry.class).getProvider(providerId);
         String username = session.getPrincipal().getName();
-        Credential credential = oAuth2ServiceProvider.loadCredential(username);
+        String serviceUsername = oAuth2ServiceProvider.getServiceUser(username);
+        Credential credential = oAuth2ServiceProvider.loadCredential(serviceUsername);
         if (credential == null) {
             String message = "No credentials found for user " + username + " and service " +
                     providerId;
