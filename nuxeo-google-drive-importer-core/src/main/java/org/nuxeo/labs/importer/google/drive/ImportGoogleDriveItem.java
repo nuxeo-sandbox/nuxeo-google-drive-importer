@@ -4,9 +4,8 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
-import com.google.api.services.drive.model.ChildList;
-import com.google.api.services.drive.model.ChildReference;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -17,7 +16,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
 
@@ -77,10 +75,9 @@ public class ImportGoogleDriveItem {
     public void importFolder(Drive drive, File file, DocumentModel root) throws IOException {
         DocumentModel folder = session.createDocumentModel(root.getPathAsString(), file.getTitle(), "Folder");
         folder = session.createDocument(folder);
-        ChildList children = drive.children().list(file.getId()).execute();
-        for(ChildReference reference: children.getItems()) {
-            File childFile = drive.files().get(reference.getId()).execute();
-            importFile(drive,childFile,folder);
+        FileList children = drive.files().list().setQ(String.format("'%s' in parents",file.getId())).execute();
+        for(File child: children.getItems()) {
+            importFile(drive,child,folder);
         }
     }
 
