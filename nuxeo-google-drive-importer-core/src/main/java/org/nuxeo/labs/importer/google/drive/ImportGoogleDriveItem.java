@@ -15,8 +15,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.liveconnect.core.CredentialFactory;
-import org.nuxeo.ecm.liveconnect.core.OAuth2CredentialFactory;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
@@ -44,17 +42,14 @@ public class ImportGoogleDriveItem {
     protected String itemId;
 
     @Param(name = "providerId", required = false)
-    protected String providerId = "googledrive";
+    protected String providerId = "googledrive-importer";
 
     @OperationMethod
     public DocumentModel run(DocumentModel input) throws IOException {
         OAuth2ServiceProvider oAuth2ServiceProvider =
                 Framework.getService(OAuth2ServiceProviderRegistry.class).getProvider(providerId);
-        CredentialFactory credentialFactory =  new OAuth2CredentialFactory(oAuth2ServiceProvider);
-
         String username = session.getPrincipal().getName();
-
-        Credential credential = credentialFactory.build(username);
+        Credential credential = oAuth2ServiceProvider.loadCredential(username);
         if (credential == null) {
             String message = "No credentials found for user " + username + " and service " +
                     providerId;

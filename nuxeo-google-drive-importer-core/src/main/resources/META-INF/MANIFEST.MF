@@ -6,4 +6,4 @@ Bundle-Version: 1.0.0
 Bundle-Name: nuxeo-google-drive-importer-core
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.nuxeo.labs.nuxeo-google-drive-importer-core;singleton=true
-Nuxeo-Component: OSGI-INF/operation-contrib.xml
+Nuxeo-Component: OSGI-INF/operation-contrib.xml, OSGI-INF/oauth-provider-contrib.xml

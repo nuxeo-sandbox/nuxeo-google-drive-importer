@@ -1,0 +1,18 @@
+<component name="org.nuxeo.labs.importer.google.drive.oauth" version="1.0.0">
+
+    <require>org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry</require>
+
+    <extension target="org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry" point="providers">
+        <provider>
+            <name>googledrive-importer</name>
+            <description>Google Drive</description>
+            <!--class>org.nuxeo.ecm.liveconnect.google.drive.GoogleOAuth2ServiceProvider</class-->
+            <tokenServerURL>https://accounts.google.com/o/oauth2/token</tokenServerURL>
+            <authorizationServerURL>https://accounts.google.com/o/oauth2/auth?access_type=offline&amp;approval_prompt=force</authorizationServerURL>
+            <scope>https://www.googleapis.com/auth/drive.readonly</scope>
+            <scope>email</scope>
+            <clientId>googledrive-importer</clientId>
+        </provider>
+    </extension>
+
+</component>

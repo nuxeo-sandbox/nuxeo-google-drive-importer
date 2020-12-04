@@ -30,7 +30,6 @@ import static org.junit.Assert.assertNotNull;
 @Features(AutomationFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({"org.nuxeo.labs.nuxeo-google-drive-importer-core",
-         "org.nuxeo.ecm.liveconnect",
          "org.nuxeo.ecm.platform.oauth"
 })
 public class TestImportGoogleDriveItem {
@@ -43,7 +42,7 @@ public class TestImportGoogleDriveItem {
 
     @Before
     public void createToken() {
-        OAuth2TokenStore store = new OAuth2TokenStore("googledrive");
+        OAuth2TokenStore store = new OAuth2TokenStore("googledrive-importer");
         NuxeoOAuth2Token token = new NuxeoOAuth2Token(
                 System.getProperty("google-drive-accesstoken"),
                 null,

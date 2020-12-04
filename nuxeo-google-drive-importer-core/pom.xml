@@ -23,9 +23,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.nuxeo.ecm.liveconnect</groupId>
-            <artifactId>nuxeo-liveconnect</artifactId>
-            <scope>provided</scope>
+            <groupId>com.google.apis</groupId>
+            <artifactId>google-api-services-drive</artifactId>
         </dependency>
         <dependency>
             <groupId>org.nuxeo.ecm.automation</groupId>

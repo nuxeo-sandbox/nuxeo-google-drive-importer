@@ -25,7 +25,6 @@
   <!-- <package>nuxeo-jsf-ui</package> -->
   <!-- If you require WEB UI package:  -->
   <!-- <package>nuxeo-web-ui</package> -->
-    <package>nuxeo-liveconnect</package>
   </dependencies>
   <!-- Conflicts with other packages -->
   <!-- <conflicts> -->
