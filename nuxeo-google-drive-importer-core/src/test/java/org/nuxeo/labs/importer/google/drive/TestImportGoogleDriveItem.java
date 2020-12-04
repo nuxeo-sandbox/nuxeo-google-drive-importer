@@ -77,6 +77,7 @@ public class TestImportGoogleDriveItem {
         ctx.setInput(folder);
         Map<String, Object> params = new HashMap<>();
         params.put("itemId", System.getProperty("google-drive-folder-id"));
+        params.put("batchSize",3);
         folder = (DocumentModel) automationService.run(ctx, ImportGoogleDriveItem.ID,params);
         DocumentModelList children = session.getChildren(folder.getRef());
         assertEquals(1,children.size());

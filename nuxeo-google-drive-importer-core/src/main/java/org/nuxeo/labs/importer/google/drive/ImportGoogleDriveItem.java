@@ -18,6 +18,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +44,11 @@ public class ImportGoogleDriveItem {
 
     @Param(name = "providerId", required = false)
     protected String providerId = "googledrive-importer";
+
+    @Param(name = "batchSize", required = false)
+    protected long batchSize = 10;
+
+    protected int counter=0;
 
     @OperationMethod
     public DocumentModel run(DocumentModel input) throws IOException {
@@ -75,6 +81,7 @@ public class ImportGoogleDriveItem {
     public void importFolder(Drive drive, File file, DocumentModel root) throws IOException {
         DocumentModel folder = session.createDocumentModel(root.getPathAsString(), file.getTitle(), "Folder");
         folder = session.createDocument(folder);
+        incrementDocumentCounter();
         FileList children = drive.files().list().setQ(String.format("'%s' in parents",file.getId())).execute();
         for(File child: children.getItems()) {
             importFile(drive,child,folder);
@@ -93,5 +100,14 @@ public class ImportGoogleDriveItem {
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), file.getTitle(), "File");
         doc.setPropertyValue("file:content", (Serializable) blob);
         session.createDocument(doc);
+        incrementDocumentCounter();
+    }
+
+    protected void incrementDocumentCounter() {
+        counter++;
+        if (counter % batchSize == 0) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 }
