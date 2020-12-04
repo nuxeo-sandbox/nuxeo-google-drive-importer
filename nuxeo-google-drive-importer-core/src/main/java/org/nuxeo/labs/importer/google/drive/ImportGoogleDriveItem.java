@@ -90,7 +90,7 @@ public class ImportGoogleDriveItem {
             return;
         }
 
-        InputStream in = drive.files().get(file.getId()).executeAsInputStream();
+        InputStream in = drive.files().get(file.getId()).executeMediaAsInputStream();
         Blob blob = new FileBlob(in, file.getMimeType());
         blob.setFilename(file.getTitle());
         DocumentModel doc = session.createDocumentModel(root.getPathAsString(), file.getTitle(), "File");
