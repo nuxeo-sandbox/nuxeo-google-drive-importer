@@ -23,7 +23,7 @@ mvn test -Dgoogle-drive-accesstoken=MY_TOKEN -Dgoogle-drive-file-id=MY_FILE_ID -
 ## How to run
 
 - install this package as well as nuxeo-liveconnect on your nuxeo environment
-- as an administrator, [configure liveconnect for google drive](https://doc.nuxeo.com/nxdoc/nuxeo-live-connect/#setting-up-live-connect-for-google-drive)
+- as an administrator, [configure the googledrive-importer provider](https://doc.nuxeo.com/nxdoc/nuxeo-live-connect/#setting-up-live-connect-for-google-drive)
 - in webui, connect your Google Drive account to the application (user setting / Cloud Services Accounts / Connect to Google Drive)
 - Use the Automation API to import content
 
